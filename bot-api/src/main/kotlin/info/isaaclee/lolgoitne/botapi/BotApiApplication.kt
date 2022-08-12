@@ -3,7 +3,7 @@ package info.isaaclee.lolgoitne.botapi
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = ["info.isaaclee.lolgoitne"])
 class BotApiApplication
 
 fun main(args: Array<String>) {
