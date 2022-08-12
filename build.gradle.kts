@@ -37,6 +37,7 @@ subprojects {
 		implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 		implementation("org.springframework.boot:spring-boot-starter-security")
 		implementation("org.springframework.boot:spring-boot-starter-web")
+		implementation("org.springframework.boot:spring-boot-starter-webflux")
 		implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 		developmentOnly("org.springframework.boot:spring-boot-devtools")
 
@@ -103,6 +104,9 @@ project(":admin-api") {
 
 //domain 설정
 project(":domain") {
+	dependencies {
+		implementation(project(":util"))
+	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
