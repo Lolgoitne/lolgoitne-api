@@ -42,7 +42,7 @@ class JwtModule {
 		)
 	}
 
-	private fun createToken(subject: String, expiration: Date): String {
+	fun createToken(subject: String, expiration: Date): String {
 		return Jwts.builder()
 			.signWith(privateKey, SignatureAlgorithm.RS256)
 			.setSubject(subject)
