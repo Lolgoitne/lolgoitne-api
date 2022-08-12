@@ -9,7 +9,7 @@ plugins {
 	kotlin("plugin.jpa") version "1.6.10" apply false
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 allprojects {
 	group = "com.gorany"
@@ -40,13 +40,14 @@ subprojects {
 		implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 		developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+		//jwt
+		implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+		implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+		implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
 		//kotlin
 		implementation("org.jetbrains.kotlin:kotlin-reflect")
 		implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-		//lombok
-		compileOnly("org.projectlombok:lombok")
-		annotationProcessor("org.projectlombok:lombok")
 
 		//DB connect
 		runtimeOnly("com.h2database:h2")
@@ -70,7 +71,7 @@ subprojects {
 	tasks.withType<KotlinCompile> {
 		kotlinOptions {
 			freeCompilerArgs = listOf("-Xjsr305=strict")
-			jvmTarget = "11"
+			jvmTarget = "17"
 		}
 	}
 
@@ -89,6 +90,14 @@ subprojects {
 project(":bot-api") {
 	dependencies {
 		implementation(project(":domain"))
+		implementation(project(":util"))
+	}
+}
+
+project(":admin-api") {
+	dependencies {
+		implementation(project(":domain"))
+		implementation(project(":util"))
 	}
 }
 
