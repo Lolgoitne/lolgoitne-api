@@ -2,7 +2,9 @@ package info.isaaclee.lolgoitne.util.http
 
 import info.isaaclee.lolgoitne.util.http.dto.CurrentGameInfoDTO
 import info.isaaclee.lolgoitne.util.http.dto.SummonerDTO
+import info.isaaclee.lolgoitne.util.http.exceptions.ForbiddenException
 import info.isaaclee.lolgoitne.util.http.exceptions.GameNotFoundException
+import info.isaaclee.lolgoitne.util.http.exceptions.UnauthorizedException
 import info.isaaclee.lolgoitne.util.http.exceptions.UserNotFoundException
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.bodyToMono
@@ -17,6 +19,10 @@ class RiotHttpClient: HttpClient("https://kr.api.riotgames.com/lol") {
 			.exchangeToMono { response ->
 				if (response.rawStatusCode() == 404) {
 					throw UserNotFoundException()
+				} else if (response.rawStatusCode() == 401) {
+					throw UnauthorizedException()
+				} else if (response.rawStatusCode() == 403) {
+					throw ForbiddenException()
 				}
 				response.bodyToMono()
 			}
@@ -29,6 +35,10 @@ class RiotHttpClient: HttpClient("https://kr.api.riotgames.com/lol") {
 			.exchangeToMono { response ->
 				if (response.rawStatusCode() == 404) {
 					throw GameNotFoundException()
+				} else if (response.rawStatusCode() == 401) {
+					throw UnauthorizedException()
+				} else if (response.rawStatusCode() == 403) {
+					throw ForbiddenException()
 				}
 				response.bodyToMono()
 			}
