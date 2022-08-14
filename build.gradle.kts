@@ -54,6 +54,12 @@ subprojects {
 		runtimeOnly("com.h2database:h2")
 		runtimeOnly("mysql:mysql-connector-java")
 
+		//logback
+		implementation("net.logstash.logback:logstash-logback-encoder:6.6")
+
+		//lombok
+		implementation("org.projectlombok:lombok")
+
 		//mac
 		runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.72.Final:osx-aarch_64")
 
@@ -65,10 +71,6 @@ subprojects {
 	dependencyManagement {
 		imports {
 			mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
-		}
-
-		dependencies {
-			dependency("net.logstash.logback:logstash-logback-encoder:6.6")
 		}
 	}
 
