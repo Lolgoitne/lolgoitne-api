@@ -6,8 +6,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
-import java.nio.file.Files
-import java.nio.file.Paths
+import org.springframework.util.StreamUtils
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.PublicKey
@@ -21,8 +20,10 @@ class JwtModule {
 	private lateinit var privateKey: PrivateKey
 	private lateinit var publicKey: PublicKey
 	init {
-		var privatePem = String(Files.readAllBytes(Paths.get(ClassPathResource("private_key_pkcs8.pem").uri)))
-		var publicPem = String(Files.readAllBytes(Paths.get(ClassPathResource("public_key.pem").uri)))
+//		var privatePem = String(Files.readAllBytes(Paths.get(ClassPathResource("private_key_pkcs8.pem").uri)))
+//		var publicPem = String(Files.readAllBytes(Paths.get(ClassPathResource("public_key.pem").uri)))
+		var privatePem = String(StreamUtils.copyToByteArray(ClassPathResource("private_key_pkcs8.pem").inputStream))
+		var publicPem = String(StreamUtils.copyToByteArray(ClassPathResource("public_key.pem").inputStream))
 		privatePem = privatePem
 			.replace("\n", "")
 			.replace("-----BEGIN PRIVATE KEY-----", "")
