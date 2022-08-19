@@ -1,7 +1,7 @@
 package info.isaaclee.lolgoitne.util.http.dto
 
 //https://developer.riotgames.com/apis#spectator-v4/GET_getCurrentGameInfoBySummoner
-class CurrentGameInfoDTO(
+data class CurrentGameInfoDTO(
 	val gameId: Long?,
 	val gameType: String?,
 	val gameStartTime: Long?,
@@ -15,17 +15,17 @@ class CurrentGameInfoDTO(
 	val participant: CurrentGameParticipant?
 )
 
-class BannedChampion(
+data class BannedChampion(
 	val pickTurn: Int,
 	val championId: Long,
 	val teamId: Long
 )
 
-class Observer(
+data class Observer(
 	val encryptionKey: String
 )
 
-class CurrentGameParticipant(
+data class CurrentGameParticipant(
 	val championId: Long,
 	val perks: Perks,
 	val profileIconId: Long,
@@ -38,13 +38,13 @@ class CurrentGameParticipant(
 	val gameCustomizationObject: GameCustomizationObject
 )
 
-class Perks(
+data class Perks(
 	val perkIds: List<Long>,
 	val perkStyle: Long,
 	val perkSubStyle: Long
 )
 
-class GameCustomizationObject(
+data class GameCustomizationObject(
 	val category: String,
 	val content: String,
 )
