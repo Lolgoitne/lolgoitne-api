@@ -12,7 +12,7 @@ plugins {
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 allprojects {
-	group = "com.gorany"
+	group = "info.isaaclee.lolgoitne"
 	version = "0.0.1-SNAPSHOT"
 
 	repositories {
@@ -92,29 +92,47 @@ subprojects {
 	}
 }
 
-//api <- domain 의존
-project(":bot-api") {
-	dependencies {
-		implementation(project(":domain"))
-		implementation(project(":util"))
-	}
-}
-
-project(":admin-api") {
-	dependencies {
-		implementation(project(":domain"))
-		implementation(project(":util"))
-	}
-}
-
 //domain 설정
 project(":domain") {
 	dependencies {
-		implementation(project(":util"))
+		api(project(":util"))
 	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
 	bootJar.enabled = false
 	jar.enabled = true
+}
+
+//domain 설정
+project(":util") {
+	val jar: Jar by tasks
+	val bootJar: BootJar by tasks
+
+	bootJar.enabled = false
+	jar.enabled = true
+}
+
+//api <- domain 의존
+project(":bot-api") {
+	dependencies {
+		api(project(":domain"))
+	}
+	val jar: Jar by tasks
+	val bootJar: BootJar by tasks
+
+	bootJar.enabled = true
+	jar.enabled = false
+}
+
+project(":admin-api") {
+	dependencies {
+		api(project(":domain"))
+		api(project(":util"))
+	}
+	val jar: Jar by tasks
+	val bootJar: BootJar by tasks
+
+	bootJar.enabled = true
+	jar.enabled = false
 }
