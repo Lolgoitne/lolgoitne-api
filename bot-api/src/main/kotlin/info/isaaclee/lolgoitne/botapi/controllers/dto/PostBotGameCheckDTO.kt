@@ -6,7 +6,7 @@ class PostBotGameCheckDTO(
 
 class Action(
 	val name: String,
-	val clientExtra: String?,
+	val clientExtra: Any?,
 	val params: Params,
 	val id: String,
 )
