@@ -33,7 +33,7 @@ class BotService(
 
 			val queue = getQueue(game.gameQueueConfigId)
 
-			val modeDescription = if (gameMode == "CLASSIC") "(${translateQueueDescription(queue?.description)})" else ""
+			val modeDescription = if (game.gameMode == "CLASSIC") "(${translateQueueDescription(queue?.description)})" else ""
 
 			return "찾았다! ${nickname}님은 게임 중이에요! ${gameMode}${modeDescription}에서 ${champion?.name} 챔피언을 ${time}분째 플레이 중이에요!"
 		} catch (ex: UserNotFoundException) {
