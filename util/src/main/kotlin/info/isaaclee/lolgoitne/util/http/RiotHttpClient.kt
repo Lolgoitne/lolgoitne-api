@@ -40,6 +40,7 @@ class RiotHttpClient: HttpClient("https://kr.api.riotgames.com/lol") {
 				} else if (response.rawStatusCode() == 403) {
 					throw ForbiddenException()
 				}
+				println(response.toString())
 				response.bodyToMono()
 			}
 	}
