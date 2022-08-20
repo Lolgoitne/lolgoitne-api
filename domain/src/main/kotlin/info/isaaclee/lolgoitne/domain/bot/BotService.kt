@@ -29,13 +29,13 @@ class BotService(
 
 			val gameMode = translateGameMode(game.gameMode)
 
-			val time = game.gameStartTime - System.currentTimeMillis()
+			val time = if (game.gameLength < 60) 0 else abs((game.gameStartTime - System.currentTimeMillis()) / 1000 / 60)
 
 			val queue = getQueue(game.gameQueueConfigId)
 
 			val modeDescription = if (gameMode == "CLASSIC") "(${translateQueueDescription(queue?.description)})" else ""
 
-			return "찾았다! ${nickname}님은 게임 중이에요! ${gameMode}${modeDescription}에서 ${champion?.name} 챔피언을 ${abs(time / 1000 / 60)}분째 플레이 중이에요!"
+			return "찾았다! ${nickname}님은 게임 중이에요! ${gameMode}${modeDescription}에서 ${champion?.name} 챔피언을 ${time}분째 플레이 중이에요!"
 		} catch (ex: UserNotFoundException) {
 			return "${nickname}님을 찾을 수 없어요!"
 		} catch (ex: GameNotFoundException) {
