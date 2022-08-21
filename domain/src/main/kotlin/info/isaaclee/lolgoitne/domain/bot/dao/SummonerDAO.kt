@@ -1,6 +1,6 @@
-package info.isaaclee.lolgoitne.util.http.dto
+package info.isaaclee.lolgoitne.domain.bot.dao
 
-class SummonerDTO(
+class SummonerDAO(
 	val accountId: String,
 	val profileIconId: Int,
 	val revisionDate: Long,

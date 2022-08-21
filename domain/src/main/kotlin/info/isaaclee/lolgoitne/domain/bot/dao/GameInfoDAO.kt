@@ -1,7 +1,7 @@
-package info.isaaclee.lolgoitne.util.http.dto
+package info.isaaclee.lolgoitne.domain.bot.dao
 
 //https://developer.riotgames.com/apis#spectator-v4/GET_getCurrentGameInfoBySummoner
-data class CurrentGameInfoDTO(
+data class CurrentGameInfoDAO(
 	val gameId: Long,
 	val gameType: String,
 	val gameStartTime: Long,

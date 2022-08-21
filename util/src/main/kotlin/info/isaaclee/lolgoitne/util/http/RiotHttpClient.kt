@@ -1,7 +1,8 @@
 package info.isaaclee.lolgoitne.util.http
 
-import info.isaaclee.lolgoitne.util.http.dto.CurrentGameInfoDTO
-import info.isaaclee.lolgoitne.util.http.dto.SummonerDTO
+import info.isaaclee.lolgoitne.domain.bot.dao.CurrentGameInfoDAO
+import info.isaaclee.lolgoitne.domain.bot.dao.SummonerDAO
+import info.isaaclee.lolgoitne.domain.modules.RiotHttpClient
 import info.isaaclee.lolgoitne.util.http.exceptions.ForbiddenException
 import info.isaaclee.lolgoitne.util.http.exceptions.GameNotFoundException
 import info.isaaclee.lolgoitne.util.http.exceptions.UnauthorizedException
@@ -9,15 +10,14 @@ import info.isaaclee.lolgoitne.util.http.exceptions.UserNotFoundException
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.bodyToMono
-import reactor.core.publisher.Mono
 
 @Component
-class RiotHttpClient(
+class RiotHttpClientImpl(
 	environment: Environment
-): HttpClient("https://kr.api.riotgames.com/lol") {
+): HttpClient("https://kr.api.riotgames.com/lol"), RiotHttpClient {
 	private val apiToken: String = environment.getRequiredProperty("riot.apiKey")
 
-	fun getSummonerInfo(nickname: String): Mono<SummonerDTO> {
+	override fun getSummonerInfo(nickname: String): SummonerDAO {
 		return this.webClient.get()
 			.uri("/summoner/v4/summoners/by-name/${nickname}")
 			.header("X-Riot-Token", apiToken)
@@ -29,11 +29,13 @@ class RiotHttpClient(
 				} else if (response.rawStatusCode() == 403) {
 					throw ForbiddenException()
 				}
-				response.bodyToMono()
+				response.bodyToMono<SummonerDAO>()
 			}
+			.blockOptional()
+			.get()
 	}
 
-	fun getGameInfo(summonerId: String): Mono<CurrentGameInfoDTO> {
+	override fun getGameInfo(summonerId: String): CurrentGameInfoDAO {
 		return this.webClient.get()
 			.uri("/spectator/v4/active-games/by-summoner/${summonerId}")
 			.header("X-Riot-Token", apiToken)
@@ -45,7 +47,9 @@ class RiotHttpClient(
 				} else if (response.rawStatusCode() == 403) {
 					throw ForbiddenException()
 				}
-				response.bodyToMono()
+				response.bodyToMono<CurrentGameInfoDAO>()
 			}
+			.blockOptional()
+			.get()
 	}
 }

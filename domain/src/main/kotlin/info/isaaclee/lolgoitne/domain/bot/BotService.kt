@@ -1,16 +1,11 @@
 package info.isaaclee.lolgoitne.domain.bot
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import info.isaaclee.lolgoitne.domain.bot.dao.Champion
-import info.isaaclee.lolgoitne.domain.bot.dao.ChampionDAO
-import info.isaaclee.lolgoitne.domain.bot.dao.Queue
-import info.isaaclee.lolgoitne.domain.bot.dao.QueueDAO
-import info.isaaclee.lolgoitne.util.http.RiotHttpClient
-import info.isaaclee.lolgoitne.util.http.exceptions.GameNotFoundException
-import info.isaaclee.lolgoitne.util.http.exceptions.UserNotFoundException
+import info.isaaclee.lolgoitne.domain.bot.dao.*
+import info.isaaclee.lolgoitne.domain.modules.RiotHttpClient
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
-import kotlin.math.abs
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class BotService(
@@ -18,14 +13,13 @@ class BotService(
 ) {
 	fun checkInGame(nickname: String): String {
 		try {
-			val summoner = this.riotHttpClient.getSummonerInfo(nickname).blockOptional().get()
+			val summoner = this.riotHttpClient.getSummonerInfo(nickname)
 
-			val game = this.riotHttpClient.getGameInfo(summoner.id).blockOptional().get()
+			val game = this.riotHttpClient.getGameInfo(summoner.id)
 
 			val inGameInfo = game.participants.find { participant -> participant.summonerId == summoner.id }
-				?: throw GameNotFoundException()
 
-			val champion = getChampionInfo(inGameInfo.championId.toString())
+			val champion = getChampionInfo(inGameInfo?.championId.toString())
 
 			val gameMode = translateGameMode(game.gameMode)
 
@@ -36,12 +30,16 @@ class BotService(
 			val modeDescription = if (game.gameMode == "CLASSIC") "(${translateQueueDescription(queue?.description)})" else ""
 
 			return "찾았다! ${nickname}님은 게임 중이에요! ${gameMode}${modeDescription}에서 ${champion?.name} 챔피언을 ${time}분째 플레이 중이에요!"
-		} catch (ex: UserNotFoundException) {
-			return "${nickname}님을 찾을 수 없어요!"
-		} catch (ex: GameNotFoundException) {
-			return "${nickname}님은 현재 게임 중이 아니에요!"
+		} catch (ex: ResponseStatusException) {
+			if (ex.message == null) {
+				return "현재 서버가 많이 아파요"
+			} else if (ex.message.contains(GAME_NOT_FOUND)) {
+				return "${nickname}님은 현재 게임 중이 아니에요!"
+			} else if (ex.message.contains(USER_NOT_FOUND)) {
+				return "${nickname}님을 찾을 수 없었어요!"
+			}
+			return "현재 서버가 많이 아파요"
 		} catch (ex: Exception) {
-			println(ex)
 			return "현재 서버가 많이 아파요"
 		}
 	}
