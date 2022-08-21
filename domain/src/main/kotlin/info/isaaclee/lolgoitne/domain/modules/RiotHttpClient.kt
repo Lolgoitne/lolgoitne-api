@@ -5,6 +5,7 @@ import info.isaaclee.lolgoitne.domain.bot.exceptions.*
 import info.isaaclee.lolgoitne.util.http.HttpClient
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
+import org.springframework.util.MultiValueMap
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Component
@@ -37,6 +38,37 @@ class RiotHttpClient(
 				}
 				response.bodyToMono<CurrentGameInfoDAO>()
 			}
+			.blockOptional()
+			.get()
+	}
+
+	fun getMatchIds(puuid: String, query: MultiValueMap<String, String>): List<String> {
+		return this.webClient.get()
+			.uri { uri ->
+				uri
+					.host("asia.api.riotgames.com")
+					.path("/match/v5/matches/by-puuid/${puuid}/ids")
+					.queryParams(query)
+					.build()
+			}
+			.header("X-Riot-Token", apiToken)
+			.retrieve()
+			.bodyToMono<List<String>>()
+			.blockOptional()
+			.get()
+	}
+
+	fun getMatch(matchId: String): MatchDAO {
+		return this.webClient.get()
+			.uri { uri ->
+				uri
+					.host("asia.api.riotgames.com")
+					.path("/match/v5/matches/${matchId}")
+					.build()
+			}
+			.header("X-Riot-Token", apiToken)
+			.retrieve()
+			.bodyToMono<MatchDAO>()
 			.blockOptional()
 			.get()
 	}

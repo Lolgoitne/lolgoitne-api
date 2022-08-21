@@ -4,22 +4,26 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import info.isaaclee.lolgoitne.domain.bot.dao.*
 import info.isaaclee.lolgoitne.domain.modules.RiotHttpClient
 import org.springframework.core.io.ClassPathResource
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import org.springframework.web.server.ResponseStatusException
+import java.text.SimpleDateFormat
 
 @Service
 class BotService(
 	private val riotHttpClient: RiotHttpClient
 ) {
 	fun checkInGame(nickname: String): String {
-		var summoner: SummonerDAO?
+		var summoner: SummonerDAO? = null
 		var game: CurrentGameInfoDAO?
 		try {
 			summoner = this.riotHttpClient.getSummonerInfo(nickname)
 			game = this.riotHttpClient.getGameInfo(summoner.id)
 		} catch (ex: ResponseStatusException) {
 			if (ex.message.contains(GAME_NOT_FOUND)) {
-				return "${nickname}님은 현재 게임 중이 아니에요!"
+				return lastPlayingDate(summoner!!.puuid, nickname)
 			} else if (ex.message.contains(USER_NOT_FOUND)) {
 				return "${nickname}님을 찾을 수 없었어요!"
 			}
@@ -36,6 +40,24 @@ class BotService(
 		val modeDescription = if (game.gameMode == "CLASSIC") "(${translateQueueDescription(queue?.description)})" else ""
 
 		return "찾았다! ${nickname}님은 게임 중이에요! ${translateGameMode(game.gameMode)}${modeDescription}에서 ${champion?.name} 챔피언을 ${playingTime}분째 플레이 중이에요!"
+	}
+
+	fun lastPlayingDate(puuid: String, nickname: String): String {
+		val match: MatchDAO?
+		try {
+			val queryParams: MultiValueMap<String, String> = LinkedMultiValueMap()
+			queryParams.add("count", "1")
+
+			val matchIds = this.riotHttpClient.getMatchIds(puuid, queryParams)
+			match = this.riotHttpClient.getMatch(matchIds[0])
+		} catch (ex: ResponseStatusException) {
+			if (ex.status == HttpStatus.NOT_FOUND) {
+				return "${nickname}은 게임 전적이 없어요!"
+			}
+			return INTERNAL_SERVER_ERROR_MESSAGE
+		}
+		val lastDate = SimpleDateFormat("yyyy년 MM월 dd일 hh시 mm분").format(match.info.gameEndTimestamp)
+		return "앗! ${nickname}님은 지금 게임 중이 아니네요. ${nickname}님이 마지막으로 게임을 한 시간은 ${lastDate}이에요."
 	}
 
 	fun getQueue(queueId: Long): Queue? {
