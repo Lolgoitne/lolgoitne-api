@@ -106,9 +106,6 @@ project(":domain") {
 
 //domain 설정
 project(":util") {
-	dependencies {
-		api(project(":domain"))
-	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 

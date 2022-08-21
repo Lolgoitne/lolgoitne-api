@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/bot")
 class BotController(
-	private val botService: BotService
+	val botService: BotService
 ) {
 	@PostMapping("/check-game")
 	fun postBotCheckGame(@RequestBody body: PostBotGameCheckDTO): ResponseEntity<BotResponseDTO> {

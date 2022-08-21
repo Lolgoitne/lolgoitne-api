@@ -1,4 +1,4 @@
-package info.isaaclee.lolgoitne.util.http.exceptions
+package info.isaaclee.lolgoitne.domain.bot.exceptions
 
 import info.isaaclee.lolgoitne.domain.bot.GAME_NOT_FOUND
 import org.springframework.http.HttpStatus
