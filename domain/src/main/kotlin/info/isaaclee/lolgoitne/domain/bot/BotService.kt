@@ -12,36 +12,32 @@ class BotService(
 	private val riotHttpClient: RiotHttpClient
 ) {
 	fun checkInGame(nickname: String): String {
+		var summoner: SummonerDAO?
+		var game: CurrentGameInfoDAO?
 		try {
-			val summoner = this.riotHttpClient.getSummonerInfo(nickname)
-
-			val game = this.riotHttpClient.getGameInfo(summoner.id)
-
-			val inGameInfo = game.participants.find { participant -> participant.summonerId == summoner.id }
-
-			val champion = getChampionInfo(inGameInfo?.championId.toString())
-
-			val gameMode = translateGameMode(game.gameMode)
-
-			val time = if (game.gameLength < 60) 0 else (System.currentTimeMillis() - game.gameStartTime) / 1000 / 60
-
-			val queue = getQueue(game.gameQueueConfigId)
-
-			val modeDescription = if (game.gameMode == "CLASSIC") "(${translateQueueDescription(queue?.description)})" else ""
-
-			return "찾았다! ${nickname}님은 게임 중이에요! ${gameMode}${modeDescription}에서 ${champion?.name} 챔피언을 ${time}분째 플레이 중이에요!"
+			summoner = this.riotHttpClient.getSummonerInfo(nickname)
+			game = this.riotHttpClient.getGameInfo(summoner.id)
 		} catch (ex: ResponseStatusException) {
 			if (ex.message == null) {
-				return "현재 서버가 많이 아파요"
+				return INTERNAL_SERVER_ERROR_MESSAGE
 			} else if (ex.message.contains(GAME_NOT_FOUND)) {
 				return "${nickname}님은 현재 게임 중이 아니에요!"
 			} else if (ex.message.contains(USER_NOT_FOUND)) {
 				return "${nickname}님을 찾을 수 없었어요!"
 			}
-			return "현재 서버가 많이 아파요"
-		} catch (ex: Exception) {
-			return "현재 서버가 많이 아파요"
+			return INTERNAL_SERVER_ERROR_MESSAGE
 		}
+		val myInGameInfo = game.participants.find { participant -> participant.summonerId == summoner.id }
+
+		val champion = getChampionInfo(myInGameInfo?.championId.toString())
+
+		val playingTime = if (game.gameLength < 60) 0 else (System.currentTimeMillis() - game.gameStartTime) / 1000 / 60
+
+		val queue = getQueue(game.gameQueueConfigId)
+
+		val modeDescription = if (game.gameMode == "CLASSIC") "(${translateQueueDescription(queue?.description)})" else ""
+
+		return "찾았다! ${nickname}님은 게임 중이에요! ${translateGameMode(game.gameMode)}${modeDescription}에서 ${champion?.name} 챔피언을 ${playingTime}분째 플레이 중이에요!"
 	}
 
 	fun getQueue(queueId: Long): Queue? {
