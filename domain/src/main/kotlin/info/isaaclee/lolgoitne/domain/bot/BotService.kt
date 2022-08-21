@@ -18,9 +18,7 @@ class BotService(
 			summoner = this.riotHttpClient.getSummonerInfo(nickname)
 			game = this.riotHttpClient.getGameInfo(summoner.id)
 		} catch (ex: ResponseStatusException) {
-			if (ex.message == null) {
-				return INTERNAL_SERVER_ERROR_MESSAGE
-			} else if (ex.message.contains(GAME_NOT_FOUND)) {
+			if (ex.message.contains(GAME_NOT_FOUND)) {
 				return "${nickname}님은 현재 게임 중이 아니에요!"
 			} else if (ex.message.contains(USER_NOT_FOUND)) {
 				return "${nickname}님을 찾을 수 없었어요!"
