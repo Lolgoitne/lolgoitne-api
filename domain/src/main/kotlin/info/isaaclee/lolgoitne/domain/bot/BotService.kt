@@ -29,7 +29,7 @@ class BotService(
 
 			val gameMode = translateGameMode(game.gameMode)
 
-			val time = if (game.gameLength < 60) 0 else abs((game.gameStartTime - System.currentTimeMillis()) / 1000 / 60)
+			val time = if (game.gameLength < 60) 0 else (System.currentTimeMillis() - game.gameStartTime) / 1000 / 60
 
 			val queue = getQueue(game.gameQueueConfigId)
 
