@@ -1,7 +1,6 @@
 package info.isaaclee.lolgoitne.domain.modules
 
 import info.isaaclee.lolgoitne.domain.bot.dao.*
-import info.isaaclee.lolgoitne.domain.bot.exceptions.*
 import info.isaaclee.lolgoitne.util.http.HttpClient
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
@@ -18,12 +17,8 @@ class RiotHttpClient(
 		return this.webClient.get()
 			.uri("/summoner/v4/summoners/by-name/${nickname}")
 			.header("X-Riot-Token", apiToken)
-			.exchangeToMono { response ->
-				if (response.rawStatusCode() == 404) {
-					throw UserNotFoundException()
-				}
-				response.bodyToMono<SummonerDAO>()
-			}
+			.retrieve()
+			.bodyToMono<SummonerDAO>()
 			.blockOptional()
 			.get()
 	}
@@ -32,12 +27,8 @@ class RiotHttpClient(
 		return this.webClient.get()
 			.uri("/spectator/v4/active-games/by-summoner/${summonerId}")
 			.header("X-Riot-Token", apiToken)
-			.exchangeToMono { response ->
-				if (response.rawStatusCode() == 404) {
-					throw GameNotFoundException()
-				}
-				response.bodyToMono<CurrentGameInfoDAO>()
-			}
+			.retrieve()
+			.bodyToMono<CurrentGameInfoDAO>()
 			.blockOptional()
 			.get()
 	}

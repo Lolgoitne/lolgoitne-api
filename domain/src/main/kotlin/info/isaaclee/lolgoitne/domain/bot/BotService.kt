@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
-import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.text.SimpleDateFormat
 
 @Service
@@ -16,19 +16,26 @@ class BotService(
 	private val riotHttpClient: RiotHttpClient
 ) {
 	fun checkInGame(nickname: String): String {
-		var summoner: SummonerDAO? = null
-		var game: CurrentGameInfoDAO?
+		val summoner: SummonerDAO?
 		try {
 			summoner = this.riotHttpClient.getSummonerInfo(nickname)
-			game = this.riotHttpClient.getGameInfo(summoner.id)
-		} catch (ex: ResponseStatusException) {
-			if (ex.message.contains(GAME_NOT_FOUND)) {
-				return lastPlayingDate(summoner!!.puuid, nickname)
-			} else if (ex.message.contains(USER_NOT_FOUND)) {
+		} catch (ex: WebClientResponseException) {
+			if (ex.statusCode == HttpStatus.NOT_FOUND) {
 				return "${nickname}님을 찾을 수 없었어요!"
 			}
 			return INTERNAL_SERVER_ERROR_MESSAGE
 		}
+
+		val game: CurrentGameInfoDAO?
+		try {
+			game = this.riotHttpClient.getGameInfo(summoner.id)
+		} catch (ex: WebClientResponseException) {
+			if (ex.statusCode == HttpStatus.NOT_FOUND) {
+				return lastPlayingDate(summoner.puuid, nickname)
+			}
+			return INTERNAL_SERVER_ERROR_MESSAGE
+		}
+
 		val myInGameInfo = game.participants.find { participant -> participant.summonerId == summoner.id }
 
 		val champion = getChampionInfo(myInGameInfo?.championId.toString())
@@ -50,8 +57,8 @@ class BotService(
 
 			val matchIds = this.riotHttpClient.getMatchIds(puuid, queryParams)
 			match = this.riotHttpClient.getMatch(matchIds[0])
-		} catch (ex: ResponseStatusException) {
-			if (ex.status == HttpStatus.NOT_FOUND) {
+		} catch (ex: WebClientResponseException) {
+			if (ex.statusCode == HttpStatus.NOT_FOUND) {
 				return "${nickname}은 게임 전적이 없어요!"
 			}
 			return INTERNAL_SERVER_ERROR_MESSAGE
