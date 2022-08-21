@@ -6,16 +6,21 @@ import info.isaaclee.lolgoitne.util.http.exceptions.ForbiddenException
 import info.isaaclee.lolgoitne.util.http.exceptions.GameNotFoundException
 import info.isaaclee.lolgoitne.util.http.exceptions.UnauthorizedException
 import info.isaaclee.lolgoitne.util.http.exceptions.UserNotFoundException
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 
 @Component
-class RiotHttpClient: HttpClient("https://kr.api.riotgames.com/lol") {
-	fun getSummonerInfo(header: String, nickname: String): Mono<SummonerDTO> {
+class RiotHttpClient(
+	environment: Environment
+): HttpClient("https://kr.api.riotgames.com/lol") {
+	private val apiToken: String = environment.getRequiredProperty("riot.apiKey")
+
+	fun getSummonerInfo(nickname: String): Mono<SummonerDTO> {
 		return this.webClient.get()
 			.uri("/summoner/v4/summoners/by-name/${nickname}")
-			.header("X-Riot-Token", header)
+			.header("X-Riot-Token", apiToken)
 			.exchangeToMono { response ->
 				if (response.rawStatusCode() == 404) {
 					throw UserNotFoundException()
@@ -28,10 +33,10 @@ class RiotHttpClient: HttpClient("https://kr.api.riotgames.com/lol") {
 			}
 	}
 
-	fun getGameInfo(header: String, summonerId: String): Mono<CurrentGameInfoDTO> {
+	fun getGameInfo(summonerId: String): Mono<CurrentGameInfoDTO> {
 		return this.webClient.get()
 			.uri("/spectator/v4/active-games/by-summoner/${summonerId}")
-			.header("X-Riot-Token", header)
+			.header("X-Riot-Token", apiToken)
 			.exchangeToMono { response ->
 				if (response.rawStatusCode() == 404) {
 					throw GameNotFoundException()
@@ -40,7 +45,6 @@ class RiotHttpClient: HttpClient("https://kr.api.riotgames.com/lol") {
 				} else if (response.rawStatusCode() == 403) {
 					throw ForbiddenException()
 				}
-				println(response.toString())
 				response.bodyToMono()
 			}
 	}

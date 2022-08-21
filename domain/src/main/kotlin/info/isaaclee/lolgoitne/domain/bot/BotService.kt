@@ -18,9 +18,9 @@ class BotService(
 ) {
 	fun checkInGame(nickname: String): String {
 		try {
-			val summoner = this.riotHttpClient.getSummonerInfo("RGAPI-a2bf0ef5-4ef9-4726-b123-578af4e0f9fc", nickname).blockOptional().get()
+			val summoner = this.riotHttpClient.getSummonerInfo(nickname).blockOptional().get()
 
-			val game = this.riotHttpClient.getGameInfo("RGAPI-a2bf0ef5-4ef9-4726-b123-578af4e0f9fc", summoner.id).blockOptional().get()
+			val game = this.riotHttpClient.getGameInfo(summoner.id).blockOptional().get()
 
 			val inGameInfo = game.participants.find { participant -> participant.summonerId == summoner.id }
 				?: throw GameNotFoundException()
