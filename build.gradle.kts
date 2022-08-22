@@ -54,6 +54,8 @@ subprojects {
 		runtimeOnly("com.h2database:h2")
 		runtimeOnly("mysql:mysql-connector-java")
 
+		implementation("javax.inject:javax.inject:1")
+
 		//logback
 		implementation("net.logstash.logback:logstash-logback-encoder:6.6")
 
@@ -93,10 +95,7 @@ subprojects {
 }
 
 //domain 설정
-project(":domain") {
-	dependencies {
-		api(project(":util"))
-	}
+project(":core") {
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
@@ -105,7 +104,7 @@ project(":domain") {
 }
 
 //domain 설정
-project(":util") {
+project(":common") {
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
@@ -113,10 +112,11 @@ project(":util") {
 	jar.enabled = true
 }
 
-//api <- domain 의존
-project(":bot-api") {
+project(":adapter-in") {
 	dependencies {
-		api(project(":domain"))
+		implementation(project(":core"))
+		implementation(project(":common"))
+		implementation(project(":adapter-out:http"))
 	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
@@ -125,14 +125,13 @@ project(":bot-api") {
 	jar.enabled = false
 }
 
-project(":admin-api") {
+project(":adapter-out:http") {
 	dependencies {
-		api(project(":domain"))
-		api(project(":util"))
+		implementation(project(":core"))
 	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
-	bootJar.enabled = true
-	jar.enabled = false
+	bootJar.enabled = false
+	jar.enabled = true
 }
