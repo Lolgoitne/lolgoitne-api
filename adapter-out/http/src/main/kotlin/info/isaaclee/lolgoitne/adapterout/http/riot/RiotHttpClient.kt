@@ -21,6 +21,7 @@ class RiotHttpClient: FindSummonerOutPort, FindGameOutPort, FindMatchesOutPort, 
 			.uri("/summoner/v4/summoners/by-name/${nickname}")
 			.header("X-Riot-Token", "")
 			.retrieve()
+			.onStatus(Predicate.isEqual(HttpStatus.NOT_FOUND)) { Mono.error(SummonerNotFoundException()) }
 			.bodyToMono<Summoner>()
 			.blockOptional()
 			.get()
@@ -31,6 +32,7 @@ class RiotHttpClient: FindSummonerOutPort, FindGameOutPort, FindMatchesOutPort, 
 			.uri("/spectator/v4/active-games/by-summoner/${summonerId}")
 			.header("X-Riot-Token", apiToken)
 			.retrieve()
+			.onStatus(Predicate.isEqual(HttpStatus.NOT_FOUND)) { Mono.error(GameNotFoundException()) }
 			.bodyToMono<Game>()
 			.blockOptional()
 			.get()
