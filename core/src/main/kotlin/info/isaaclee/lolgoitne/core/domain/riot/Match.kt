@@ -1,9 +1,9 @@
-package info.isaaclee.lolgoitne.core.bot.dao
+package info.isaaclee.lolgoitne.core.domain.riot
 
 //https://developer.riotgames.com/apis#match-v5/GET_getMatch
-data class MatchDAO(
-	val metadata: Metadata,
-	val info: MatchInfo
+data class Match(
+  val metadata: Metadata,
+  val info: MatchInfo
 )
 
 data class Metadata(

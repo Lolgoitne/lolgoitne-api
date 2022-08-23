@@ -1,8 +1,4 @@
-package info.isaaclee.lolgoitne.core.bot.dao
-
-data class QueueDAO(
-	val data: List<Queue>
-)
+package info.isaaclee.lolgoitne.core.domain.riot
 
 data class Queue(
 	val queueId: Long,

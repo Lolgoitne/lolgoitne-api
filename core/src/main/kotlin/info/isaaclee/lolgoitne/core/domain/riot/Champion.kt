@@ -1,8 +1,4 @@
-package info.isaaclee.lolgoitne.core.bot.dao
-
-data class ChampionDAO(
-	val data: Map<String, Champion>
-)
+package info.isaaclee.lolgoitne.core.domain.riot
 
 data class Champion(
 	val version: String,

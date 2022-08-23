@@ -1,6 +1,6 @@
-package info.isaaclee.lolgoitne.core.bot.dao
+package info.isaaclee.lolgoitne.core.domain.riot
 
-class SummonerDAO(
+data class Summoner(
 	val accountId: String,
 	val profileIconId: Int,
 	val revisionDate: Long,
