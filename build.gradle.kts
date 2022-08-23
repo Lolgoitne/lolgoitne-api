@@ -34,17 +34,10 @@ subprojects {
 
 	dependencies {
 		//spring boot
-		implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-		implementation("org.springframework.boot:spring-boot-starter-security")
 		implementation("org.springframework.boot:spring-boot-starter-web")
-		implementation("org.springframework.boot:spring-boot-starter-webflux")
+		implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 		implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 		developmentOnly("org.springframework.boot:spring-boot-devtools")
-
-		//jwt
-		implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-		implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
-		implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
 		//kotlin
 		implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -93,9 +86,9 @@ subprojects {
 }
 
 //domain 설정
-project(":domain") {
+project(":core") {
 	dependencies {
-		api(project(":util"))
+		implementation("javax.inject:javax.inject:1")
 	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
@@ -105,7 +98,12 @@ project(":domain") {
 }
 
 //domain 설정
-project(":util") {
+project(":common") {
+	dependencies {
+		implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+		implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+		implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
@@ -113,10 +111,13 @@ project(":util") {
 	jar.enabled = true
 }
 
-//api <- domain 의존
-project(":bot-api") {
+project(":adapter-in") {
 	dependencies {
-		api(project(":domain"))
+		implementation(project(":core"))
+		implementation(project(":common"))
+		implementation(project(":adapter-out:http"))
+		implementation(project(":adapter-out:file"))
+		implementation("org.springframework.boot:spring-boot-starter-security")
 	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
@@ -125,14 +126,25 @@ project(":bot-api") {
 	jar.enabled = false
 }
 
-project(":admin-api") {
+project(":adapter-out:http") {
 	dependencies {
-		api(project(":domain"))
-		api(project(":util"))
+		implementation(project(":core"))
+		implementation("org.springframework.boot:spring-boot-starter-webflux")
 	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
-	bootJar.enabled = true
-	jar.enabled = false
+	bootJar.enabled = false
+	jar.enabled = true
+}
+
+project(":adapter-out:file") {
+	dependencies {
+		implementation(project(":core"))
+	}
+	val jar: Jar by tasks
+	val bootJar: BootJar by tasks
+	
+	bootJar.enabled = false
+	jar.enabled = true
 }
