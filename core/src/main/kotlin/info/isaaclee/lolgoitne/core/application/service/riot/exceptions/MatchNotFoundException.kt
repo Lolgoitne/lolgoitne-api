@@ -1,4 +1,4 @@
 package info.isaaclee.lolgoitne.core.application.service.riot.exceptions
 
-class MatchNotFoundException: Exception("match_not_found") {
+class MatchNotFoundException: RuntimeException("match_not_found") {
 }

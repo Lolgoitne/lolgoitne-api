@@ -1,4 +1,4 @@
 package info.isaaclee.lolgoitne.core.application.service.riot.exceptions
 
-class SummonerNotFoundException: Exception("summoner_not_found") {
+class SummonerNotFoundException: RuntimeException("summoner_not_found") {
 }
