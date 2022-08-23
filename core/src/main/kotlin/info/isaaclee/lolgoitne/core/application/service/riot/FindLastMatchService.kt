@@ -19,13 +19,17 @@ class FindLastMatchService(
       queryParams["count"] = "1"
   
       val matchIds = findMatchesOutPort.findMatchIds(puuid, queryParams)
+      if (matchIds.isEmpty()) return "${nickname}님은 게임 전적이 없어요!"
       match = findMatchOutPort.findMatchById(matchIds[0])
     } catch (ex: MatchNotFoundException) {
-      return "${nickname}은 게임 전적이 없어요!"
+      return "${nickname}님은 게임 전적이 없어요!"
     } catch (ex: Exception) {
       return INTERNAL_SERVER_ERROR_MESSAGE
     }
-    val lastDate = SimpleDateFormat("yyyy년 MM월 dd일 hh시 mm분").format(match.info.gameEndTimestamp)
-    return "앗! ${nickname}님은 지금 게임 중이 아니네요. ${nickname}님이 마지막으로 게임을 한 시간은 ${lastDate}이에요."
+    val lastDate = SimpleDateFormat("M월 d일 H시 m분").format(match.info.gameEndTimestamp)
+
+    return "앗! ${nickname}님은 지금 게임 중이 아니네요.\n" +
+        "마지막으로 게임을 했던 시간은 ${lastDate}이에요.\n" +
+        "오늘로부터 ${match.lastDateFromNow()} 전에 했네요!"
   }
 }
