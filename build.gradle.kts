@@ -34,17 +34,10 @@ subprojects {
 
 	dependencies {
 		//spring boot
-		implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-		implementation("org.springframework.boot:spring-boot-starter-security")
 		implementation("org.springframework.boot:spring-boot-starter-web")
-		implementation("org.springframework.boot:spring-boot-starter-webflux")
+		implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 		implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 		developmentOnly("org.springframework.boot:spring-boot-devtools")
-
-		//jwt
-		implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-		implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
-		implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
 		//kotlin
 		implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -53,8 +46,6 @@ subprojects {
 		//DB connect
 		runtimeOnly("com.h2database:h2")
 		runtimeOnly("mysql:mysql-connector-java")
-
-		implementation("javax.inject:javax.inject:1")
 
 		//logback
 		implementation("net.logstash.logback:logstash-logback-encoder:6.6")
@@ -96,6 +87,9 @@ subprojects {
 
 //domain 설정
 project(":core") {
+	dependencies {
+		implementation("javax.inject:javax.inject:1")
+	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
@@ -105,6 +99,11 @@ project(":core") {
 
 //domain 설정
 project(":common") {
+	dependencies {
+		implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+		implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+		implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
@@ -117,6 +116,7 @@ project(":adapter-in") {
 		implementation(project(":core"))
 		implementation(project(":common"))
 		implementation(project(":adapter-out:http"))
+		implementation("org.springframework.boot:spring-boot-starter-security")
 	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
@@ -128,6 +128,7 @@ project(":adapter-in") {
 project(":adapter-out:http") {
 	dependencies {
 		implementation(project(":core"))
+		implementation("org.springframework.boot:spring-boot-starter-webflux")
 	}
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
