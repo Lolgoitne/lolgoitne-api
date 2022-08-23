@@ -116,6 +116,7 @@ project(":adapter-in") {
 		implementation(project(":core"))
 		implementation(project(":common"))
 		implementation(project(":adapter-out:http"))
+		implementation(project(":adapter-out:file"))
 		implementation("org.springframework.boot:spring-boot-starter-security")
 	}
 	val jar: Jar by tasks
@@ -133,6 +134,17 @@ project(":adapter-out:http") {
 	val jar: Jar by tasks
 	val bootJar: BootJar by tasks
 
+	bootJar.enabled = false
+	jar.enabled = true
+}
+
+project(":adapter-out:file") {
+	dependencies {
+		implementation(project(":core"))
+	}
+	val jar: Jar by tasks
+	val bootJar: BootJar by tasks
+	
 	bootJar.enabled = false
 	jar.enabled = true
 }
