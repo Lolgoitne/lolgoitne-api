@@ -1,4 +1,4 @@
-package info.isaaclee.lolgoitne.util.jwt
+package info.isaaclee.lolgoitne.common.jwt
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
