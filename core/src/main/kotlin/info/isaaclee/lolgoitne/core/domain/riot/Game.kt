@@ -13,7 +13,14 @@ data class Game(
   val gameQueueConfigId: Long,
   val observers: Observer?,
   val participants: List<CurrentGameParticipant>
-)
+) {
+  
+  fun translateGameMode() = when (gameMode) {
+    "CLASSIC" -> "소환사의 협곡"
+    "ARAM" -> "칼바람 나락"
+    else -> gameMode
+  }
+}
 
 data class BannedChampion(
 	val pickTurn: Int,

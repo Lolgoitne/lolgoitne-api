@@ -43,29 +43,10 @@ class CheckGameService(
 		
 		val queue = findQueueOutPort.findQueue(game.gameQueueConfigId) ?: return INTERNAL_SERVER_ERROR_MESSAGE
 		
-		val modeDescription = if (game.gameMode == "CLASSIC") "(${translateQueueDescription(queue.description)})" else ""
+		val modeDescription = if (game.gameMode == "CLASSIC") "(${queue.translateQueueDescription()})" else ""
 		
 		return "찾았다! ${nickname}님은 게임 중이에요!\n" +
-			"${translateGameMode(game.gameMode)}${modeDescription}에서\n" +
+			"${game.translateGameMode()}${modeDescription}에서\n" +
 			"${champion.name} 챔피언을 ${playingTime}분째 플레이 중이에요!"
-	}
-	
-	private fun translateGameMode(gameMode: String) = when (gameMode) {
-		"CLASSIC" -> "소환사의 협곡"
-		"ARAM" -> "칼바람 나락"
-		else -> gameMode
-	}
-	
-	private fun translateQueueDescription(description: String?): String {
-		if (description == null) {
-			return "커스텀 게임"
-		}
-		if (description.contains("Blind")) {
-			return "비공개 선택"
-		}
-		if (description.contains("Ranked")) {
-			return "랭크"
-		}
-		return "이벤트 게임"
 	}
 }
