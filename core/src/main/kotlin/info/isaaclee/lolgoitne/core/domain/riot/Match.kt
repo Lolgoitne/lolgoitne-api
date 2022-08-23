@@ -1,10 +1,36 @@
 package info.isaaclee.lolgoitne.core.domain.riot
 
+import java.util.*
+
 //https://developer.riotgames.com/apis#match-v5/GET_getMatch
 data class Match(
   val metadata: Metadata,
   val info: MatchInfo
-)
+) {
+	fun lastDateFromNow(): String {
+		var msFromNow = (Calendar.getInstance(Locale.KOREA).timeInMillis - info.gameEndTimestamp) / (1000 * 60)
+		var date = ""
+		var divideNum: Int
+		while (msFromNow > 0L) {
+			if (msFromNow >= 43200) {
+				divideNum = 60 * 24 * 30
+				date += "${msFromNow / divideNum}개월 "
+			} else if (msFromNow >= 1440) {
+				divideNum = 60 * 24
+				date += "${msFromNow / divideNum}일 "
+			} else if (msFromNow >= 60) {
+				divideNum = 60
+				date += "${msFromNow / divideNum}시간 "
+			} else {
+				divideNum = 1
+				date += "${msFromNow}분"
+				msFromNow = 0
+			}
+			msFromNow %= divideNum
+		}
+		return date
+	}
+}
 
 data class Metadata(
 	val dataVersion: String,
