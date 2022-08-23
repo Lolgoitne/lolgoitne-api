@@ -1,11 +1,15 @@
 package info.isaaclee.lolgoitne.adapterout.http.riot
 
 import info.isaaclee.lolgoitne.core.application.port.out.http.*
+import info.isaaclee.lolgoitne.core.application.service.riot.exceptions.*
 import info.isaaclee.lolgoitne.core.domain.riot.*
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
+import reactor.core.publisher.Mono
+import java.util.function.Predicate
 
 @Component
 class RiotHttpClient: FindSummonerOutPort, FindGameOutPort, FindMatchesOutPort, FindMatchOutPort {
@@ -43,6 +47,7 @@ class RiotHttpClient: FindSummonerOutPort, FindGameOutPort, FindMatchesOutPort, 
 			}
 			.header("X-Riot-Token", apiToken)
 			.retrieve()
+			.onStatus(Predicate.isEqual(HttpStatus.NOT_FOUND)) { Mono.error(MatchNotFoundException()) }
 			.bodyToMono<List<String>>()
 			.blockOptional()
 			.get()
