@@ -34,12 +34,7 @@ class CheckGameService(
 		val champion = findChampionOutPort.findChampion(inGame?.championId.toString()) ?: return INTERNAL_SERVER_ERROR_MESSAGE
 		
 		val playingTime = if (game.gameLength < 60) 0
-			else {
-				val time = Calendar.getInstance()
-				time.timeInMillis = game.gameStartTime
-				time.add(Calendar.HOUR, 9)
-				(System.currentTimeMillis() - time.timeInMillis) / 1000 / 60
-			}
+			else (Calendar.getInstance(Locale.KOREA).timeInMillis - game.gameStartTime) / 1000 / 60
 		
 		val queue = findQueueOutPort.findQueue(game.gameQueueConfigId) ?: return INTERNAL_SERVER_ERROR_MESSAGE
 		
