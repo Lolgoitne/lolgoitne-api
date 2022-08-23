@@ -4,7 +4,6 @@ import info.isaaclee.lolgoitne.core.application.port.out.http.FindMatchOutPort
 import info.isaaclee.lolgoitne.core.application.port.out.http.FindMatchesOutPort
 import info.isaaclee.lolgoitne.core.application.service.riot.exceptions.MatchNotFoundException
 import info.isaaclee.lolgoitne.core.domain.riot.Match
-import java.text.SimpleDateFormat
 import javax.inject.Named
 
 @Named
@@ -26,10 +25,9 @@ class FindLastMatchService(
     } catch (ex: Exception) {
       return INTERNAL_SERVER_ERROR_MESSAGE
     }
-    val lastDate = SimpleDateFormat("M월 d일 H시 m분").format(match.info.gameEndTimestamp)
 
     return "앗! ${nickname}님은 지금 게임 중이 아니네요.\n" +
-        "마지막으로 게임을 했던 시간은 ${lastDate}이에요.\n" +
+        "마지막으로 게임을 했던 시간은 ${match.endDate("M월 d일 H시 m분")}이에요.\n" +
         "오늘로부터 ${match.lastDateFromNow()} 전에 했네요!"
   }
 }
