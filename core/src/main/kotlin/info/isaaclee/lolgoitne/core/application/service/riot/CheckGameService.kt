@@ -4,6 +4,7 @@ import info.isaaclee.lolgoitne.core.application.port.`in`.CheckInGameInPort
 import info.isaaclee.lolgoitne.core.application.port.out.http.*
 import info.isaaclee.lolgoitne.core.application.service.riot.exceptions.*
 import info.isaaclee.lolgoitne.core.domain.riot.*
+import java.util.*
 import javax.inject.Named
 
 @Named
@@ -32,7 +33,13 @@ class CheckGameService(
 		
 		val champion = findChampionOutPort.findChampion(inGame?.championId.toString()) ?: return INTERNAL_SERVER_ERROR_MESSAGE
 		
-		val playingTime = if (game.gameLength < 60) 0 else (System.currentTimeMillis() - game.gameStartTime) / 1000 / 60
+		val playingTime = if (game.gameLength < 60) 0
+			else {
+				val time = Calendar.getInstance()
+				time.timeInMillis = game.gameStartTime
+				time.add(Calendar.HOUR, 9)
+				(System.currentTimeMillis() - time.timeInMillis) / 1000 / 60
+			}
 		
 		val queue = findQueueOutPort.findQueue(game.gameQueueConfigId) ?: return INTERNAL_SERVER_ERROR_MESSAGE
 		
