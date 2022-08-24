@@ -1,25 +1,33 @@
 package info.isaaclee.lolgoitne.core.application.service.riot
 
-import info.isaaclee.lolgoitne.core.application.port.out.http.FindMatchOutPort
-import info.isaaclee.lolgoitne.core.application.port.out.http.FindMatchesOutPort
+import info.isaaclee.lolgoitne.core.application.port.`in`.FindLastGameInPort
+import info.isaaclee.lolgoitne.core.application.port.out.http.*
 import info.isaaclee.lolgoitne.core.application.service.riot.exceptions.MatchNotFoundException
+import info.isaaclee.lolgoitne.core.application.service.riot.exceptions.SummonerNotFoundException
 import info.isaaclee.lolgoitne.core.domain.riot.Match
 import javax.inject.Named
 
 @Named
 class FindLastMatchService(
+  private val findSummonerOutPort: FindSummonerOutPort,
   private val findMatchesOutPort: FindMatchesOutPort,
   private val findMatchOutPort: FindMatchOutPort
-) {
-  fun lastPlayingDate(nickname: String, puuid: String): String {
+): FindLastGameInPort {
+  override fun lastPlayingDate(nickname: String, puuid: String?): String {
     val match: Match
     try {
+      var puuidRef = puuid
+      if (puuidRef == null) {
+        puuidRef = findSummonerOutPort.findSummonerByNickname(nickname).puuid
+      }
       val queryParams: MutableMap<String, String> = mutableMapOf()
       queryParams["count"] = "1"
   
-      val matchIds = findMatchesOutPort.findMatchIds(puuid, queryParams)
+      val matchIds = findMatchesOutPort.findMatchIds(puuidRef, queryParams)
       if (matchIds.isEmpty()) return "${nickname}님은 게임 전적이 없어요!"
       match = findMatchOutPort.findMatchById(matchIds[0])
+    } catch (ex: SummonerNotFoundException) {
+      return "${nickname}님을 찾을 수 없었어요!"
     } catch (ex: MatchNotFoundException) {
       return "${nickname}님은 게임 전적이 없어요!"
     } catch (ex: Exception) {
