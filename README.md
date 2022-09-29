@@ -23,7 +23,7 @@ Adapter-in - API, 외부에서 들어오는 요청들을 핸들링 하는 레이
 
 Adapter-out - Http Client 등 흐름이 내부에서 외부로 나가는 레이어
 
-core - port, service, domain 으로 이루어지는 핵심 레이어
+core - port, service, domain 으로 이루어지는 레이어
 
 common - jwt 와 같이 유틸성 모듈들이 존재하는 레이어
 
